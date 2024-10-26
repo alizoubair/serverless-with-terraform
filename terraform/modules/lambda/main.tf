@@ -1,7 +1,7 @@
 resource "aws_iam_role" "greeting_lambda_execution_role" {
   name = "Cloud9-greeting_lambda_execution_role"
 
-  assume_role_policy = jsondecode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -10,17 +10,17 @@ resource "aws_iam_role" "greeting_lambda_execution_role" {
           Service = "lambda.amazonaws.com"
         },
         Effect = "Allow",
-        Sid = ""
+        Sid    = ""
       }
     ]
   })
 }
 
 resource "aws_iam_policy" "greeting_lambda_s3_policy" {
-  name = "greeting_lambda_s3_policy"
+  name        = "greeting_lambda_s3_policy"
   description = "Grants access to source and destination buckets"
 
-  policy = jsondecode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -50,24 +50,24 @@ locals {
 }
 
 resource "aws_iam_role_policy_attachment" "greeting_lambda_policy_attachments" {
-  count = length(local.policy_arns)
+  count      = length(local.policy_arns)
   policy_arn = local.policy_arns[count.index]
-  role               = aws_iam_role.greeting_lambda_execution_role.name
+  role       = aws_iam_role.greeting_lambda_execution_role.name
 }
 
 data "archive_file" "lambda_zip" {
-  type = "zip"
-  source_dir = "${path.root}/../lambda/src"
+  type        = "zip"
+  source_dir  = "${path.root}/../lambda/src"
   output_path = "lambda.zip"
 }
 
 resource "aws_lambda_function" "greeting_lambda" {
   function_name = "greeting_lambda"
 
-  handler = "index.handler"
-  runtime = "nodejs20.x"
+  handler     = "index.handler"
+  runtime     = "nodejs20.x"
   memory_size = var.lambda_memory_size
-  role          = aws_iam_role.greeting_lambda_execution_role.arn
+  role        = aws_iam_role.greeting_lambda_execution_role.arn
 
   environment {
     variables = {
@@ -76,6 +76,36 @@ resource "aws_lambda_function" "greeting_lambda" {
     }
   }
 
-  filename = data.archive_file.lambda_zip.output_path
+  filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+}
+
+resource "aws_iam_policy" "greeting_lambda_sqs_policy" {
+  name        = "greeting_lambda_sqs_policy"
+  description = "Grant access to red messages from SQS"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"],
+        Effect = "Allow",
+        Resource = [
+          var.greeting_queue_arn
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "greeting_lambda_sqs_policy_attachment" {
+  policy_arn = aws_iam_policy.greeting_lambda_sqs_policy.arn
+  role       = aws_iam_role.greeting_lambda_execution_role.name
+}
+
+resource "aws_lambda_event_source_mapping" "greeting_sqs_mapping" {
+  event_source_arn = var.greeting_queue_arn
+  function_name    = aws_lambda_function.greeting_lambda.function_name
+  batch_size       = 1
+  depends_on       = [aws_iam_role_policy_attachment.greeting_lambda_sqs_policy_attachment]
 }

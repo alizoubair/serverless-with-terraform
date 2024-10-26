@@ -13,3 +13,11 @@ variable "src_bucket_id" {
 variable "dst_bucket_id" {
   type = string
 }
+
+variable "lambda_memory_size" {
+  type = number
+}
+
+variable "greeting_queue_arn" {
+  type = string
+}
