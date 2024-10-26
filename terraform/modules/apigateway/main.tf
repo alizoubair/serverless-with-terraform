@@ -89,3 +89,66 @@ resource "aws_iam_role_policy" "api_gateway_policy" {
     ]
   })
 }
+
+resource "aws_iam_role" "api_gateway_cloudwatch_role" {
+  name = "Cloud9-api_gateway_cloudwatch_role"
+  assume_role_policy = jsonencode({
+    Version : "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+        Action = "sts:AssumeRole",
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "api_gateway_cloudwatch_policy" {
+  role = aws_iam_role.api_gateway_cloudwatch_role.id
+  policy = jsonencode({
+    Version : "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLLogStream",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents"
+        ],
+        Resource = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "xray.PutTraceSegments",
+          "xray:PutTelemetryRecords"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_api_gateway_account" "api_gateway_account" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway_cloudwatch_role.arn
+}
+
+resource "aws_api_gateway_method_settings" "greetings_api_method_settings" {
+  rest_api_id = aws_api_gateway_rest_api.greetings_api.id
+  stage_name  = aws_api_gateway_deployment.greeting_api_deployment.stage_name
+  method_path = "*/*"
+
+  settings {
+    logging_level      = "INFO"
+    data_trace_enabled = true
+    metrics_enabled    = true
+  }
+  depends_on = [aws_api_gateway_account.api_gateway_account]
+}
