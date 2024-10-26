@@ -19,4 +19,9 @@ module "lambda" {
   dst_bucket_arn     = module.storage.dst_bucket_arn
   dst_bucket_id      = module.storage.dst_bucket_id
   lambda_memory_size = var.lambda_memory_size
+  greeting_queue_arn = module.sqs.greeting_queue_arn
+}
+
+module "sqs" {
+  source = "./modules/sqs"
 }
