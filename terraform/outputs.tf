@@ -12,3 +12,8 @@ output "lambda_function_arn" {
   value       = module.lambda.lambda_function_arn
   description = "The ARN of the Lambda function"
 }
+
+output "api_gateway_url" {
+  value       = module.apigateway.greeting_api_endpoint
+  description = "URL for API Gateway"
+}

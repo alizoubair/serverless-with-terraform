@@ -25,3 +25,10 @@ module "lambda" {
 module "sqs" {
   source = "./modules/sqs"
 }
+
+module "apigateway" {
+  source              = "./modules/apigateway"
+  depends_on          = [module.sqs]
+  greeting_queue_name = module.sqs.greeting_queue_name
+  greeting_queue_arn  = module.sqs.greeting_queue_arn
+}
