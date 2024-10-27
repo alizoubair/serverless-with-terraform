@@ -101,7 +101,7 @@ resource "aws_iam_role" "api_gateway_cloudwatch_role" {
         Principal = {
           Service = "apigateway.amazonaws.com"
         }
-        Action = "sts:AssumeRole",
+        Action = "sts:AssumeRole"
       }
     ]
   })
@@ -116,7 +116,7 @@ resource "aws_iam_role_policy" "api_gateway_cloudwatch_policy" {
         Effect = "Allow",
         Action = [
           "logs:CreateLogGroup",
-          "logs:CreateLLogStream",
+          "logs:CreateLogStream",
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams",
           "logs:PutLogEvents",
@@ -128,7 +128,7 @@ resource "aws_iam_role_policy" "api_gateway_cloudwatch_policy" {
       {
         Effect = "Allow",
         Action = [
-          "xray.PutTraceSegments",
+          "xray:PutTraceSegments",
           "xray:PutTelemetryRecords"
         ],
         Resource = "*"
