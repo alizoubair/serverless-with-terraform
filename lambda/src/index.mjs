@@ -29,7 +29,7 @@ export const handler = async (event) => {
     try {
         const result = await s3.getObject({
             Bucket: SOURCE_BUCKET,
-            key: `${employeeId}.jpeg`
+            Key: `${employeeId}.jpeg`
         });
 
         // Convert the stream to a buffer
