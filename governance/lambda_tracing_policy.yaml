@@ -1,0 +1,12 @@
+metadata:
+  name: "Lambda Tracing Enabled"
+  id: "CUSTOM_TRACING_ENABLED"
+  category: "GENERAL_SECURITY"
+
+definition:
+  cond_type: "attribute"
+  resource_types:
+    - "aws_lambda_function"
+  attribute: "tracing_config.mode"
+  operator: "equals"
+  value: "Active"

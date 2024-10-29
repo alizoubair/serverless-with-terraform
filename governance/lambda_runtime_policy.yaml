@@ -1,0 +1,25 @@
+metadata:
+  name: "Approved Lambda Runtime"
+  id: "CUSTOM_APPROVED_RUNTIME"
+  category: "GENERAL_SECURITY"
+
+definition:
+  or:
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_lambda_function"
+      attribute: "runtime"
+      operator: "equals"
+      value: "nodejs18.x"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_lambda_function"
+      attribute: "runtime"
+      operator: "equals"
+      value: "nodejs20.x"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_lambda_function"
+      attribute: "runtime"
+      operator: "equals"
+      value: "python3.12"
