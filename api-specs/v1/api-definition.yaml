@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info:
+  title: Greetings API
+  version: 1.0.0
+  description: API to handle greetings via a POST reques.
+servers:
+  - url: https://api-gateway-url.com
+    description: Production server
+
+paths:
+  /greetings:
+    post:
+      summary: Post a greeting
+      description: This endpoint posts a greeting.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: A message to greet.
+      responses:
+        '200':
+          description: Greeting successfully received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Greeting received successfully='
+        '400':
+          description: Invalid input provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Invalid request data'
