@@ -8,7 +8,7 @@ resource "random_string" "bucket_suffix" {
 module "storage" {
   source          = "./modules/storage"
   src_bucket_name = "src-bucket-${random_string.bucket_suffix.result}"
-  dst_bucket_name = "dst-bucket${random_string.bucket_suffix.result}"
+  dst_bucket_name = "dst-bucket-${random_string.bucket_suffix.result}"
 }
 
 module "lambda" {
