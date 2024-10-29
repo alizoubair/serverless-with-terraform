@@ -72,7 +72,7 @@ resource "aws_lambda_function" "greeting_lambda" {
   environment {
     variables = {
       SRC_BUCKET = var.src_bucket_id,
-      DIST_BUCKET = var.dst_bucket_id
+      DEST_BUCKET = var.dst_bucket_id
     }
   }
 

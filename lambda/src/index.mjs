@@ -6,7 +6,7 @@ const s3 = new S3();
 // Importing 'fs/promises' for promise-based operations
 import fs from 'fs/promises';
 const SOURCE_BUCKET = process.env.SRC_BUCKET;
-const DEST_BUCKET = process.env.DIST_BUCKET;
+const DEST_BUCKET = process.env.DEST_BUCKET;
 
 export const handler = async (event) => {
     console.log(event);
